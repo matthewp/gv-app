@@ -1,0 +1,83 @@
+@font-face {
+  font-family: 'DroidSansRegular';
+  src: url('style/fonts/DroidSans-webfont.eot');
+  src: url('style/fonts/DroidSans-webfont.eot?#iefix') format('embedded-opentype');
+  src: url('style/fonts/DroidSans-webfont.woff') format('woff');
+  src: url('style/fonts/DroidSans-webfont.ttf') format('truetype');
+  src: url('style/fonts/DroidSans-webfont.svg#DroidSansRegular') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+html {
+	height: 100%;
+	width: 100%;
+}
+
+body {
+  font-family: 'DroidSansRegular' !important;
+  height: 100%;
+  width: 100%;
+}
+
+.button-outer {
+  background: blue;
+  height: 100%;
+  height: 100%;
+}
+
+/* Login Form */
+.login-area {
+  position: absolute;
+  background: #F5F5F5;
+  height: 7em;
+  width: 100%;
+  border-bottom: 1px solid blue;
+  top: -moz-calc(-7em - 1px);
+  top: -webkit-calc(-7em - 1px);
+  top: calc(-7em - 1px);
+  -moz-transition-property: top;
+  -moz-transition-duration: 0.8s;
+}
+
+.login-area.active {
+  top: 0;
+}
+
+#login-form {
+  height: 100%;
+  width: 100%;
+  margin-top: 0.5em;
+}
+
+.login-area input {
+  display: block;
+  margin: auto;
+  margin-bottom: .2em;
+  width: 85%;
+}
+
+.login-area .button-outer {
+  height: 2.2em;
+  width: 85%;
+  margin: auto;
+  background: #3E69AE;
+}
+
+.login-area input[name="submit"] {
+  position: relative;
+  background: #488CFA;
+  border: .1em solid white;
+  padding: 2px;
+  color: white;
+  width: -moz-calc(100% - .2em);
+  height: -moz-calc(100% - .3em);
+  top: .15em;
+  font-weight: bold;
+  font-size: 15px;
+}
+/* End Login Form */
+
+a[name="sms"] {
+	display: none;
+}
