@@ -19,17 +19,21 @@ exports.get = function(req, resp) {
 
 	var info = JSON.parse(req.body);
 
-	doGet(info.email, info.auth, function(data) {
+	doGet(info.email, info.auth, info.page, function(data) {
 		resp.writeHead(200);
 		resp.write(data);
 		resp.end();
 	});
 };
 
-function doGet(email, auth, callback) {
+function doGet(email, auth, page, callback) {
+	var path = page === 1 ? '/m8/feeds/contacts/' + email + '/full'
+		: '/m8/feeds/contacts/' + email + '/full' + '?start-index=' +
+			((page - 1) * 25).toString();
+	console.log(path);
 	var options = {
 		host: 'www.google.com',
-		path: '/m8/feeds/contacts/' + email + '/full',
+		path: path,
     headers: {
       'Authorization': 'GoogleLogin auth=' + auth
     }

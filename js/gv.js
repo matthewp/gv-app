@@ -134,42 +134,55 @@
 
   Contacts = {
     load: function(page) {
+			page = page || 1;
       var info = {
         email: localStorage['email'],
         auth: localStorage['cp-auth'],
-				page: page || 1
+				page: page
       };
 
       var xhr = new XMLHttpRequest();
       xhr.open('POST', 'api/contacts', true);
-      xhr.onreadystatechange = this.loaded.bind(this);
+      xhr.onreadystatechange = this.loaded.bind(this, page);
       xhr.send(JSON.stringify(info));
     },
 
-    loaded: function(e) {
+    loaded: function(page, e) {
       if(e.target.readyState === 4) {
+				var cont = false;
+
         var xhr = e.target;
         var xml = xhr.responseXML;
-        // TODO parse xml
+
 				var iterator = xml.evaluate('//atom:entry', xml, this._resolver, XPathResult.ANY_TYPE, null);
 				var node = iterator.iterateNext();
+				if(node)
+					cont = true;
+
 				while(node) {
-					
+					this._save(node);
 					node = iterator.iterateNext();
 				}
-	
-        this.complete();
+
+				if(cont)
+					this.load(page++);
       }
+
+			setTimeout(this.load.bind(this), 3600000); // Load again in an hour.
     },
 
 		show: function(node) {
-			// TODO find the contact in the database and attach it to this node.
+			// TODO find the contact in the document
 		},
 
     complete: function() { },
 
 		_resolver: function() {
 			return 'http://www.w3.org/2005/Atom';
+		},
+
+		_save: function(node) {
+			// TODO Save this node in the database.
 		}
   };
 
