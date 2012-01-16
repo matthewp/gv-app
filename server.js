@@ -6,11 +6,13 @@ var http = require("http"),
     fs = require("fs"),
 		ClientLogin = require("./src/clientlogin.js").ClientLogin,
 		sms = require("./src/sms.js"),
+    contacts = require("./src/contacts.js"),
     port = process.argv[2] || 8888;
 
 var expressions = [
 	{ exp: /\/api\/login/, action: doLogin },
-	{ exp: /\/api\/sms/, action: sms.get }
+	{ exp: /\/api\/sms/, action: sms.get },
+  { exp: /\/api\/contacts/, action: contacts.get }
 ];
 
 http.createServer(function(request, response) {
@@ -73,12 +75,31 @@ function doLogin(req, resp, url) {
 	}
 
 	var info = JSON.parse(req.body);
-	var cl = new ClientLogin(info.email, info.password, 'grandcentral', 'HOSTED_OR_GOOGLE');
-	cl.authorize(function(sid, lsid, auth) {
-		resp.writeHead(200);
-		resp.write(auth);
-		resp.end();
-	});
+  var service = 'grandcentral';
+  var retInfo = {};
+  retInfo.email = info.email;
+  var runs = 0;
+  var login = function() {
+    var cl = new ClientLogin(info.email, info.password, service, 'HOSTED_OR_GOOGLE');
+    cl.authorize(function(sid, lsid, auth) {
+      runs++;
+      retInfo[service] = auth;
+
+      if(runs === 2) {
+        resp.writeHead(200);
+        resp.write(JSON.stringify(retInfo));
+        resp.end();
+
+        return;
+      }
+
+      service = 'cp';
+      login();
+
+      return;
+    });
+  };
+  login();
 }
 
 console.log("Static file server running at\n  => http://localhost:" + port + "/\nCTRL + C to shutdown");

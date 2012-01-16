@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'DroidSansRegular';
-  src: url('style/fonts/DroidSans-webfont.eot');
-  src: url('style/fonts/DroidSans-webfont.eot?#iefix') format('embedded-opentype');
-  src: url('style/fonts/DroidSans-webfont.woff') format('woff');
-  src: url('style/fonts/DroidSans-webfont.ttf') format('truetype');
-  src: url('style/fonts/DroidSans-webfont.svg#DroidSansRegular') format('svg');
+  src: url('fonts/roboto-regular-webfont.eot');
+  src: url('fonts/roboto-regular-webfont.eot?#iefix') format('embedded-opentype');
+  src: url('fonts/roboto-regular-webfont.woff') format('woff');
+  src: url('fonts/roboto-regular-webfont.ttf') format('truetype');
+  src: url('fonts/roboto-regular-webfont.svg#DroidSansRegular') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -77,6 +77,38 @@ body {
   font-size: 15px;
 }
 /* End Login Form */
+
+/* Message */
+#messages {
+  height: 100%;
+  width: 100%;
+}
+
+.message {
+  position: relative;
+  padding: .2em;
+  width: -moz-calc(100% - .4em);
+  margin: auto;
+  border-bottom: 1px solid #E0E0DC;
+}
+
+.message .from {
+  font-size: larger;
+}
+
+.message .content {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.message .when {
+  position: absolute;
+  right: .2em;
+  top: .1em;
+}
+/* End Message */
 
 a[name="sms"] {
 	display: none;
