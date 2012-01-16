@@ -151,9 +151,7 @@
         var xhr = e.target;
         var xml = xhr.responseXML;
         // TODO parse xml
-				var nsResolver = document.createNSResolver(xml.ownerDocument == null ?
-					xml.documentElement : xml.ownerDocument.documentElement);
-				var iterator = xml.evaluate('//entry', xml, nsResolver, XPathResult.ANY_TYPE, null);
+				var iterator = xml.evaluate('//atom:entry', xml, this._resolver, XPathResult.ANY_TYPE, null);
 				var node = iterator.iterateNext();
 				while(node) {
 					
@@ -168,7 +166,11 @@
 			// TODO find the contact in the database and attach it to this node.
 		},
 
-    complete: function() { }
+    complete: function() { },
+
+		_resolver: function() {
+			return 'http://www.w3.org/2005/Atom';
+		}
   };
 
   function Conversation(msg) {
