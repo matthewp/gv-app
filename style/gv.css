@@ -20,6 +20,11 @@ body {
   width: 100%;
 }
 
+.main {
+  height: 100%;
+  width: 100%;
+}
+
 .button-outer {
   background: blue;
   height: 100%;

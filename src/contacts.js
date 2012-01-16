@@ -43,7 +43,6 @@ function doGet(email, auth, callback) {
 			data += chunk;
 		});
 		r.on('end', function() {
-      console.log(data);
 			callback(data);
 		});
 	});

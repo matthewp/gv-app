@@ -1,5 +1,5 @@
 (function() {
-  var Watch, LoginManager;
+  var Watch, LoginManager, Contacts, Conversation;
  
   function exists(obj) {
     return typeof obj !== "undefined" && obj !== null;
@@ -17,8 +17,11 @@
         return;
       }
 
-      var list = new MessageList('sms');
-      list.getMessages();
+      Contacts.load();
+      Contacts.complete = function() {
+        var list = new MessageList('sms');
+        list.getMessages();
+      }
 
       return;
     }
@@ -82,7 +85,8 @@
 
     showMessages: function(e) {
       if(e.target.readyState === 4) {
-        var node = this._elem;
+        var self = this;
+        var node = self._elem;
         var xml = e.target.responseXML;
         var json = xml.childNodes[0].childNodes[1].textContent;
         var messages = JSON.parse(json)['messages'];
@@ -110,9 +114,52 @@
           elem.appendChild(content);
           elem.appendChild(when);
 
+          elem.addEventListener('click', self.showMessage.bind(self, msg));
           node.appendChild(elem);
         });
       }
+    },
+
+    showMessage: function(msg) {
+      var conv = new Conversation(msg);
+      conv.show();
+    }
+  };
+
+  var Contacts = {
+    load: function() {
+      var info = {
+        email: localStorage['email'],
+        auth: localStorage['cp-auth']
+      };
+
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', 'api/contacts', true);
+      xhr.onreadystatechange = this.loaded.bind(this);
+      xhr.send(JSON.stringify(info));
+    },
+
+    loaded: function(e) {
+      if(e.target.readyState === 4) {
+        var xhr = e.target;
+        var xml = xhr.responseXML;
+        // TODO parse xml
+
+        this.complete();
+      }
+    },
+
+    complete: function() { }
+  };
+
+  function Conversation(msg) {
+    this._elem = document.getElementById('conversation');
+  }
+
+  Conversation.prototype = {
+    show: function() {
+      // TODO Show the conversation items.
+      this._elem.className += ' active';
     }
   };
 
