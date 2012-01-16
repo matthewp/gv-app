@@ -1,5 +1,6 @@
 (function() {
-  var Watch, LoginManager, Contacts, Conversation;
+	'use strict';
+  var Watcher, LoginManager, Contacts, Conversation;
  
   function exists(obj) {
     return typeof obj !== "undefined" && obj !== null;
@@ -18,13 +19,18 @@
       }
 
       Contacts.load();
-      Contacts.complete = function() {
-        var list = new MessageList('sms');
-        list.getMessages();
-      }
+
+			var list = new MessageList('sms');
+			list.getMessages();
+
+			window.addEventListener('unload', this.unload);
 
       return;
-    }
+    },
+
+		unload: function() {
+			// TODO cleanup when the window is unloading.
+		}
   };
 
   function LoginForm() {
@@ -126,11 +132,12 @@
     }
   };
 
-  var Contacts = {
-    load: function() {
+  Contacts = {
+    load: function(page) {
       var info = {
         email: localStorage['email'],
-        auth: localStorage['cp-auth']
+        auth: localStorage['cp-auth'],
+				page: page || 1
       };
 
       var xhr = new XMLHttpRequest();
@@ -144,10 +151,22 @@
         var xhr = e.target;
         var xml = xhr.responseXML;
         // TODO parse xml
-
+				var nsResolver = document.createNSResolver(xml.ownerDocument == null ?
+					xml.documentElement : xml.ownerDocument.documentElement);
+				var iterator = xml.evaluate('//entry', xml, nsResolver, XPathResult.ANY_TYPE, null);
+				var node = iterator.iterateNext();
+				while(node) {
+					
+					node = iterator.iterateNext();
+				}
+	
         this.complete();
       }
     },
+
+		show: function(node) {
+			// TODO find the contact in the database and attach it to this node.
+		},
 
     complete: function() { }
   };
