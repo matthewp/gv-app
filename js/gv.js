@@ -12,7 +12,7 @@
     return typeof obj !== "undefined" && obj !== null;
   }
 
-  function openDb(callback) {
+  function openDb(callback, context) {
     const DB_NAME = 'gvapp';
     const DB_VERSION = 1;
 
@@ -28,7 +28,9 @@
       });
     };
 
-    req.onsuccess = callback;
+    req.onsuccess = context
+      ? callback.bind(context)
+      : callback;
 
     req.onerror = function(err) {
       console.log('Error opening database: ' + err);
@@ -183,19 +185,29 @@
         var xhr = e.target;
         var xml = xhr.responseXML;
 
-        var iterator = xml.evaluate('//atom:entry', xml, this._resolver, XPathResult.ANY_TYPE, null);
-        var node = iterator.iterateNext();
-        if(node)
+        var nodes = xml.getElementsByTagName('entry');
+        if(nodes) {
           cont = true;
-
-        while(node) {
-          this._save(node);
-          node = iterator.iterateNext();
+          nodes = Array.prototype.slice.call(nodes);
         }
 
-        if(cont) {
-          page++;
-          this.load(page);
+        if(!exists(this._db)) {
+          openDb(function(e) {
+            this._db = e.target.result;
+            this._save(nodes);
+
+            if(cont) {
+              page++;
+              this.load(page);
+            }
+          }, this);
+        } else {
+          this._save(nodes);
+
+          if(cont) {
+            page++;
+            this.load(page);
+          }
         }
       }
 
@@ -208,21 +220,45 @@
 
     complete: function() { },
 
-    _resolver: function() {
-      return 'http://www.w3.org/2005/Atom';
-    },
-
     _save: function(node) {
-      if(!exists(this._db)) {
-        openDb((function(e) {
-          this._db = e.target.result;
-          this._save(node);
-        }).bind(this));
+      if(node instanceof Array) {
+        var self = this;
+        node.forEach(function(n) {
+          self._save(n);
+        });
+
+        return;
       }
 
-      // TODO Save this node in the database.
+      var phones = node.getElementsByTagName('gd:phoneNumber');
+      if(phones.length === 0)
+        return;
+
+      var contact = new Contact(node);
+      var obs = '';
+      // TODO save this contact to the database.
     },
   };
+
+  function Contact(node) {
+    this.phones = (function() {
+      var arr = [];
+      var phones = node.getElementsByTagName('gd:phoneNumber');
+      phones = Array.prototype.slice.call(phones);
+      phones.forEach(function(phone) {
+        arr.push(phone.textContent);
+      });
+
+      return arr;
+    })();
+
+    this.name = document.getElementsByTagName('title')[0].textContent;
+  }
+
+  Contact.prototype = {
+    phones: [],
+    name: ''
+  }
 
   function Conversation(msg) {
     this._elem = document.getElementById('conversation');
