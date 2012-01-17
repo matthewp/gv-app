@@ -2,7 +2,7 @@
 /* vim: set shiftwidth=2 tabstop=2 autoindent cindent expandtab: */
 
 (function() {
-	'use strict';
+  'use strict';
   var Watcher, LoginManager, Contacts, Conversation;
  
   function exists(obj) {
@@ -22,18 +22,18 @@
       }
 
       Contacts.load();
-			
+      
       var list = new MessageList('sms');
-			list.getMessages();
+      list.getMessages();
 
-			window.addEventListener('unload', this.unload);
+      window.addEventListener('unload', this.unload);
 
       return;
     },
 
-		unload: function() {
-			// TODO cleanup when the window is unloading.
-		}
+    unload: function() {
+      // TODO cleanup when the window is unloading.
+    }
   };
 
   function LoginForm() {
@@ -46,7 +46,7 @@
 
   LoginForm.prototype = {
     formSubmitted: function(e) {
-			e.preventDefault();
+      e.preventDefault();
       var email = document.getElementsByName('email')[0].value;
       var password = document.getElementsByName('password')[0].value;
       this.logIn(email, password);
@@ -137,11 +137,11 @@
 
   Contacts = {
     load: function(page) {
-			page = page || 1;
+      page = page || 1;
       var info = {
         email: localStorage['email'],
         auth: localStorage['cp-auth'],
-				page: page
+        page: page
       };
 
       var xhr = new XMLHttpRequest();
@@ -152,43 +152,43 @@
 
     loaded: function(page, e) {
       if(e.target.readyState === 4) {
-				var cont = false;
+        var cont = false;
 
         var xhr = e.target;
         var xml = xhr.responseXML;
 
-				var iterator = xml.evaluate('//atom:entry', xml, this._resolver, XPathResult.ANY_TYPE, null);
-				var node = iterator.iterateNext();
-				if(node)
-					cont = true;
+        var iterator = xml.evaluate('//atom:entry', xml, this._resolver, XPathResult.ANY_TYPE, null);
+        var node = iterator.iterateNext();
+        if(node)
+          cont = true;
 
-				while(node) {
-					this._save(node);
-					node = iterator.iterateNext();
-				}
+        while(node) {
+          this._save(node);
+          node = iterator.iterateNext();
+        }
 
-				if(cont) {
+        if(cont) {
           page++;
-					this.load(page);
+          this.load(page);
         }
       }
 
-			setTimeout(this.load.bind(this), 3600000); // Load again in an hour.
+      setTimeout(this.load.bind(this), 3600000); // Load again in an hour.
     },
 
-		show: function(node) {
-			// TODO find the contact in the document
-		},
+    show: function(node) {
+      // TODO find the contact in the document
+    },
 
     complete: function() { },
 
-		_resolver: function() {
-			return 'http://www.w3.org/2005/Atom';
-		},
+    _resolver: function() {
+      return 'http://www.w3.org/2005/Atom';
+    },
 
-		_save: function(node) {
-			// TODO Save this node in the database.
-		}
+    _save: function(node) {
+      // TODO Save this node in the database.
+    }
   };
 
   function Conversation(msg) {
@@ -202,9 +202,9 @@
     }
   };
 
-	window.addEventListener('load', function winLoad() {
-		window.removeEventListener('load', winLoad);
-		Watcher.init();
-	});
+  window.addEventListener('load', function winLoad() {
+    window.removeEventListener('load', winLoad);
+    Watcher.init();
+  });
 
 })();
