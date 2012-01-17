@@ -5,8 +5,34 @@
   'use strict';
   var Watcher, LoginManager, Contacts, Conversation;
  
+  window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB
+    || window.msIndexedDB || window.oIndexedDB;
+
   function exists(obj) {
     return typeof obj !== "undefined" && obj !== null;
+  }
+
+  function openDb(callback) {
+    const DB_NAME = 'gvapp';
+    const DB_VERSION = 1;
+
+    var req = window.indexedDB.open(DB_NAME, DB_VERSION);
+    
+    req.onupgradeneeded = function(e) {
+      var db = e.target.result;
+      var stores = ['contacts'];
+      stores.forEach(function(store) {
+        if(!db.objectStoreNames.contains(store)) {
+          db.createObjectStore(store); // TODO Need to index this.
+        }
+      });
+    };
+
+    req.onsuccess = callback;
+
+    req.onerror = function(err) {
+      console.log('Error opening database: ' + err);
+    };
   }
 
   Watcher = {
@@ -187,8 +213,15 @@
     },
 
     _save: function(node) {
+      if(!exists(this._db)) {
+        openDb((function(e) {
+          this._db = e.target.result;
+          this._save(node);
+        }).bind(this));
+      }
+
       // TODO Save this node in the database.
-    }
+    },
   };
 
   function Conversation(msg) {
