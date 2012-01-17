@@ -1,3 +1,6 @@
+/* -*- Mode: Java; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- /
+/* vim: set shiftwidth=2 tabstop=2 autoindent cindent expandtab: */
+
 (function() {
 	'use strict';
   var Watcher, LoginManager, Contacts, Conversation;
@@ -19,8 +22,8 @@
       }
 
       Contacts.load();
-
-			var list = new MessageList('sms');
+			
+      var list = new MessageList('sms');
 			list.getMessages();
 
 			window.addEventListener('unload', this.unload);
@@ -164,8 +167,10 @@
 					node = iterator.iterateNext();
 				}
 
-				if(cont)
-					this.load(page++);
+				if(cont) {
+          page++;
+					this.load(page);
+        }
       }
 
 			setTimeout(this.load.bind(this), 3600000); // Load again in an hour.
