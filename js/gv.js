@@ -119,6 +119,8 @@
   }
 
   MessageList.prototype = {
+    messages: [],
+
     getMessages: function(e) {
       this._elem.innerHTML = "Loading messages";
       
@@ -139,38 +141,84 @@
           node.innerHTML = '';
 
         Object.keys(messages).forEach(function(key) {
-          var msg = messages[key];
-          self.createNode(msg);
+          var data = messages[key];
+          self.createNode(data);
         });
     },
 
-    createNode: function(msg) {
-      var elem = document.createElement('div');
-      elem.id = msg.id;
-      elem.className = 'message';
+    createNode: function(data) {
+      var msg = new Message(data);
+      this._elem.appendChild(msg.node);
 
-      var from = document.createElement('div');
-      from.className = 'from';
-      from.innerHTML = msg.phoneNumber;
-      var content = document.createElement('div');
-      content.className = 'content';
-      content.innerHTML = msg.messageText;
-      var when = document.createElement('div');
-      when.className = 'when';
-      var st = new Date(msg.displayStartDateTime);
-      when.innerHTML = (st.getMonth() + 1) + '/' + st.getDate();
-
-      elem.appendChild(from);
-      elem.appendChild(content);
-      elem.appendChild(when);
-
-      elem.addEventListener('click', self.showMessage.bind(self, msg));
-      node.appendChild(elem);
+      this.messages.push(msg);
     },
 
     showMessage: function(msg) {
       var conv = new Conversation(msg);
       conv.show();
+    },
+
+    updateContacts: function() {
+      // TODO search the database for the contact
+      
+    }
+  };
+
+  function Message(json) {
+    this.id = json.id;
+    this.phoneNumber = json.phoneNumber;
+    this.text = json.messageText;
+    this.when = json.displayStartDateTime;
+  }
+
+  Message.prototype = {
+    id: 0,
+
+    set phoneNumber: function(p) {
+      this._number = p;
+    },
+
+    get phoneNumber: function() {
+      return this._number.toPhoneNumber();
+    },
+
+    text: '',
+
+    set when: function(t) {
+      this._when = new Date(t);
+    },
+
+    get when: function() {
+      var w = this._when;
+      return (w.getMonth() + 1) + '/' + w.getDate();
+    },
+
+    get node: function() {
+      if(this._node)
+        return this._node;
+
+      var elem = document.createElement('div');
+      elem.id = this.id;
+      elem.className = 'message';
+
+      var from = document.createElement('div');
+      from.className = 'from';
+      from.innerHTML = this.phoneNumber;
+      var content = document.createElement('div');
+      content.className = 'content';
+      content.innerHTML = this.text;
+      var when = document.createElement('div');
+      when.className = 'when';
+      when.innerHTML = this.when;
+
+      elem.appendChild(from);
+      elem.appendChild(content);
+      elem.appendChild(when);
+
+      elem.addEventListener('click', this.showMessage.bind(this, msg));
+      
+      this._node = elem;
+      return this._node;
     }
   };
 
