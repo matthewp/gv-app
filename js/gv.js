@@ -153,11 +153,6 @@
       this.messages.push(msg);
     },
 
-    showMessage: function(msg) {
-      var conv = new Conversation(msg);
-      conv.show();
-    },
-
     updateContacts: function() {
       // TODO search the database for the contact
       
@@ -215,11 +210,19 @@
       elem.appendChild(content);
       elem.appendChild(when);
 
-      elem.addEventListener('click', this.showMessage.bind(this, msg));
+      elem.addEventListener('click', this.show.bind(this));
       
       this._node = elem;
       return this._node;
+    },
+
+    show: function() {
+      // TODO This code isn't working. How do we know
+      // which messages are part of a conversation?
+      var conv = new Conversation();
+      conv.show();
     }
+
   };
 
   Contacts = {
