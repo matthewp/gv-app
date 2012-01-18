@@ -8,6 +8,14 @@
   window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB
     || window.msIndexedDB || window.oIndexedDB;
 
+  String.prototype.toPhoneNumber = function() {
+    var n = this.replace(/\D/g, '');
+    if(n.length === 10)
+      n = '1' + n;
+
+      return n;
+  }
+
   function exists(obj) {
     return typeof obj !== "undefined" && obj !== null;
   }
@@ -132,29 +140,32 @@
 
         Object.keys(messages).forEach(function(key) {
           var msg = messages[key];
-          var elem = document.createElement('div');
-          elem.id = msg.id;
-          elem.className = 'message';
-
-          var from = document.createElement('div');
-          from.className = 'from';
-          from.innerHTML = msg.phoneNumber;
-          var content = document.createElement('div');
-          content.className = 'content';
-          content.innerHTML = msg.messageText;
-          var when = document.createElement('div');
-          when.className = 'when';
-          var st = new Date(msg.displayStartDateTime);
-          when.innerHTML = (st.getMonth() + 1) + '/' + st.getDate();
-
-          elem.appendChild(from);
-          elem.appendChild(content);
-          elem.appendChild(when);
-
-          elem.addEventListener('click', self.showMessage.bind(self, msg));
-          node.appendChild(elem);
+          self.createNode(msg);
         });
-      }
+    },
+
+    createNode: function(msg) {
+      var elem = document.createElement('div');
+      elem.id = msg.id;
+      elem.className = 'message';
+
+      var from = document.createElement('div');
+      from.className = 'from';
+      from.innerHTML = msg.phoneNumber;
+      var content = document.createElement('div');
+      content.className = 'content';
+      content.innerHTML = msg.messageText;
+      var when = document.createElement('div');
+      when.className = 'when';
+      var st = new Date(msg.displayStartDateTime);
+      when.innerHTML = (st.getMonth() + 1) + '/' + st.getDate();
+
+      elem.appendChild(from);
+      elem.appendChild(content);
+      elem.appendChild(when);
+
+      elem.addEventListener('click', self.showMessage.bind(self, msg));
+      node.appendChild(elem);
     },
 
     showMessage: function(msg) {
@@ -246,13 +257,13 @@
       var phones = node.getElementsByTagName('gd:phoneNumber');
       phones = Array.prototype.slice.call(phones);
       phones.forEach(function(phone) {
-        arr.push(phone.textContent);
+        arr.push(phone.textContent.toPhoneNumber());
       });
 
       return arr;
     })();
 
-    this.name = document.getElementsByTagName('title')[0].textContent;
+    this.name = node.getElementsByTagName('title')[0].textContent;
   }
 
   Contact.prototype = {
