@@ -144,6 +144,7 @@
           var data = messages[key];
           self.createNode(data);
         });
+      }
     },
 
     createNode: function(data) {
@@ -169,26 +170,26 @@
   Message.prototype = {
     id: 0,
 
-    set phoneNumber: function(p) {
+    set phoneNumber (p) {
       this._number = p;
     },
 
-    get phoneNumber: function() {
+    get phoneNumber () {
       return this._number.toPhoneNumber();
     },
 
     text: '',
 
-    set when: function(t) {
+    set when (t) {
       this._when = new Date(t);
     },
 
-    get when: function() {
+    get when () {
       var w = this._when;
       return (w.getMonth() + 1) + '/' + w.getDate();
     },
 
-    get node: function() {
+    get node () {
       if(this._node)
         return this._node;
 
