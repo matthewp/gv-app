@@ -7,6 +7,7 @@ var program = require('commander'),
 
 program.version('0.1.0')
   .option('-p, --page', 'Retrieve page [1]', parseInt)
+  .option('-j, --json', 'JSON output')
   .option('-s, --sms', 'SMS folder', 'sms')
   .option('-t, --starred', 'Starred folder', 'starred')
   .option('-m, --missed', 'Missed calls', 'missed')
@@ -35,6 +36,16 @@ initAndLogin(function(auth) {
 
 function print(data) {
   if(data && data.length) {
-    console.log(JSON.stringify(data));
+    if(program.json) {
+      console.log(JSON.stringify(data));
+    } else {
+      data.forEach(function(item) {
+        console.log(
+          item.displayStartDateTime + '\t' +
+          item.displayNumber + '\t' +
+          item.messageText
+        );
+      });
+    }
   }
 }

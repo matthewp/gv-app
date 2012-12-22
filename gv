@@ -7,7 +7,7 @@ var ClientLogin = require('./lib/clientlogin.js').ClientLogin,
 program.version('0.1.0')
   .command('ls', 'List messages')
   .command('ppl', 'List your contacts')
-  .command('send [contact] [message]', 'Send an sms to a contact')
+  .command('send [message]', 'Send an sms to a contact')
   .parse(process.argv);
 
 var log = console.log.bind(console);
