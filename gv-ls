@@ -15,37 +15,64 @@ program.version('0.1.0')
   .option('-r, --received', 'Received calls', 'received')
   .parse(process.argv);
 
-function initAndLogin(callback, errback) {
-  init(program, function(config) {
-    login(config, callback, errback);
-  });
-}
-
-initAndLogin(function(auth) {
+init(program, function(config) {
   var folder = program.sms
     || program.starred
     || program.missed
     || program.placed
     || program.received
-    || null;
+    || 'inbox';
+
+  function wrapped(callback, errback) {
+    return function(err, resp, data) {
+      if(err) {
+        (errback || function(){})(err);
+      } else {
+        callback(resp, data);
+      }
+    };
+  }
 
   var page = program.page || 1;
 
-  inbox.get(folder, page, auth, print);
+  var client = login(config);
+  client.get(folder, { start: page, limit: 10 },
+    wrapped(print, console.error.bind(console)));
+
 });
 
-function print(data) {
-  if(data && data.length) {
-    if(program.json) {
-      console.log(JSON.stringify(data));
-    } else {
-      data.forEach(function(item) {
-        console.log(
-          item.displayStartDateTime + '\t' +
-          item.displayNumber + '\t' +
-          item.messageText
-        );
+function print(resp, data) {
+  if(data) {
+    var messages = data['conversations_response']['conversation']
+      .map(function(item) { return item['phone_call']; })
+      .reduce(function(a, b) { return a.concat(b); })
+      .sort(function(a, b) {
+        var c = new Date(a['start_time']),
+            d = new Date(b['start_time']);
+
+        return c > d;
       });
+
+    if(messages.length) {
+      if(program.json) {
+        console.log(JSON.stringify(messages));
+      } else {
+        messages.forEach(function(item) {
+          var date = new Date(item['start_time']),
+              from = item['contact']['name'],
+              number = item['contact']['phone_number_formatted'],
+              msg = item['message_text'];
+
+          console.log(
+            date + '\t' +
+            from + ' ' + 
+            number + '\t' +
+            msg
+          );
+        });
+      }
     }
   }
+
+
 }
