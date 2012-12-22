@@ -9,28 +9,3 @@ program.version('0.1.0')
   .command('ppl', 'List your contacts')
   .command('send [message]', 'Send an sms to a contact')
   .parse(process.argv);
-
-var log = console.log.bind(console);
-
-init(program, function(config) {
-  var clientLogin = new ClientLogin(config.email, config.password, 'grandcentral', 'HOSTED_OR_GOOGLE');
-  clientLogin.authorize(function(sid, lsid, auth) {
-    
-    if(program.ls) {
-      sms.get(1, auth, log);
-    } else if(program.ppl) {
-      log('Contacts.');
-    } else if(program.send) {
-      var contact = program.send;
-      var message = process.argv.splice(4).join(' ');
-
-      ppl.pipe(function(phone) {
-        log('Phone number is ' + phone);
-      });
-    
-    } else {
-      program.help();
-    }
-
-  });
-});

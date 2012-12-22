@@ -3,9 +3,7 @@
 var program = require('commander'),
     voicejs = require('voice.js'),
     init = require('./lib/init'),
-    login = require('./lib/login'),
     ppl = require('./lib/ppl'),
-    sms = require('./lib/sms');
 
 program.version('0.1.0')
   .option('-p, --person', 'The person to send the message to.')

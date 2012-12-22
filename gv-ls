@@ -2,8 +2,6 @@
 
 var program = require('commander'),
     init = require('./lib/init'),
-    login = require('./lib/login'),
-    inbox = require('./lib/inbox');
 
 program.version('0.1.0')
   .option('-p, --page', 'Retrieve page [1]', parseInt)
