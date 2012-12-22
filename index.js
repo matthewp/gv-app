@@ -10,13 +10,30 @@ program.version('0.1.0')
   .option('sms [contact] [message]', 'Send an sms to a contact')
   .parse(process.argv);
 
-var configFile = process.env[process.platform == 'win32' ? 'USERPROFILE' : 'HOME'] + '/.gvrc';
-var config;
-if(fs.exists(configFile)) {
-  config = ini.parse(fs.readFileSync(configFile, 'utf-8'));
-} else {
-  console.log('No config file exists.');  
+function init(callback) {
+  var configFile = process.env[process.platform == 'win32' ? 'USERPROFILE' : 'HOME'] + '/.gvrc';
+  var config;
+  if(fs.exists(configFile)) {
+    config = ini.parse(fs.readFileSync(configFile, 'utf-8'));
+    callback(config);
+  } else {
+    config = Object.create(null);
+
+    program.prompt('Email: ', function(email) {
+      program.password('Password: ', function(password) {
+       config.email = email;
+       config.password = password;
+
+       fs.writeFileSync(configFile, ini.stringify(config));
+       callback(config);
+      });
+    });
+  }
 }
+
+init(function(config) {
+  console.log(typeof config);
+});
 
 //var clientLogin = new ClientLogin(email, password, 'grandcentral', 'HOSTED_OR_GOOGLE');
 
