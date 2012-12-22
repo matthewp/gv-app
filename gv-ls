@@ -1,0 +1,76 @@
+#!/usr/bin/env node
+
+var program = require('commander'),
+    init = require('./lib/init'),
+
+program.version('0.1.0')
+  .option('-p, --page', 'Retrieve page [1]', parseInt)
+  .option('-j, --json', 'JSON output')
+  .option('-s, --sms', 'SMS folder', 'sms')
+  .option('-t, --starred', 'Starred folder', 'starred')
+  .option('-m, --missed', 'Missed calls', 'missed')
+  .option('-l, --placed', 'Placed calls', 'placed')
+  .option('-r, --received', 'Received calls', 'received')
+  .parse(process.argv);
+
+init(program, function(config) {
+  var folder = program.sms
+    || program.starred
+    || program.missed
+    || program.placed
+    || program.received
+    || 'inbox';
+
+  function wrapped(callback, errback) {
+    return function(err, resp, data) {
+      if(err) {
+        (errback || function(){})(err);
+      } else {
+        callback(resp, data);
+      }
+    };
+  }
+
+  var page = program.page || 1;
+
+  var client = login(config);
+  client.get(folder, { start: page, limit: 10 },
+    wrapped(print, console.error.bind(console)));
+
+});
+
+function print(resp, data) {
+  if(data) {
+    var messages = data['conversations_response']['conversation']
+      .map(function(item) { return item['phone_call']; })
+      .reduce(function(a, b) { return a.concat(b); })
+      .sort(function(a, b) {
+        var c = new Date(a['start_time']),
+            d = new Date(b['start_time']);
+
+        return c > d;
+      });
+
+    if(messages.length) {
+      if(program.json) {
+        console.log(JSON.stringify(messages));
+      } else {
+        messages.forEach(function(item) {
+          var date = new Date(item['start_time']),
+              from = item['contact']['name'],
+              number = item['contact']['phone_number_formatted'],
+              msg = item['message_text'];
+
+          console.log(
+            date + '\t' +
+            from + ' ' + 
+            number + '\t' +
+            msg
+          );
+        });
+      }
+    }
+  }
+
+
+}
