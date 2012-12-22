@@ -6,7 +6,8 @@
   "author": "Matthew Phillips <matthew@matthewphillips.info>",
   "dependencies": {
     "commander": ">= 1.1.1",
-    "ini": ">= 1.0.5"
+    "ini": ">= 1.0.5",
+    "node-xml": ">= 1.0.2"
   },
   "main": "index"
 }
