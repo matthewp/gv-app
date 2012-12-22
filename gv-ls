@@ -1,0 +1,40 @@
+#!/usr/bin/env node
+
+var program = require('commander'),
+    init = require('./lib/init'),
+    login = require('./lib/login'),
+    inbox = require('./lib/inbox');
+
+program.version('0.1.0')
+  .option('-p, --page', 'Retrieve page [1]', parseInt)
+  .option('-s, --sms', 'SMS folder', 'sms')
+  .option('-t, --starred', 'Starred folder', 'starred')
+  .option('-m, --missed', 'Missed calls', 'missed')
+  .option('-l, --placed', 'Placed calls', 'placed')
+  .option('-r, --received', 'Received calls', 'received')
+  .parse(process.argv);
+
+function initAndLogin(callback, errback) {
+  init(program, function(config) {
+    login(config, callback, errback);
+  });
+}
+
+initAndLogin(function(auth) {
+  var folder = program.sms
+    || program.starred
+    || program.missed
+    || program.placed
+    || program.received
+    || null;
+
+  var page = program.page || 1;
+
+  inbox.get(folder, page, auth, print);
+});
+
+function print(data) {
+  if(data && data.length) {
+    console.log(JSON.stringify(data));
+  }
+}

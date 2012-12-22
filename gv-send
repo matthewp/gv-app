@@ -1,0 +1,29 @@
+#!/usr/bin/env node
+
+var program = require('commander'),
+    init = require('./lib/init'),
+    login = require('./lib/login'),
+    ppl = require('./lib/ppl');
+
+program.version('0.1.0')
+  .option('-p, --person', 'The person to send the message to.')
+  .option('-n, --number', 'The number to send the message to.')
+  .parse(process.argv);
+
+var initAndLogin = function(callback, errback) {
+  init(program, function(config) {
+    login(config, callback, errback);
+  });
+};
+
+initAndLogin(function(auth) {
+  ppl.pipe(function(number) {
+    var message = program.args.join(' ');
+  
+    send(auth, number, message);
+  });
+});
+
+function send(auth, number, message) {
+  console.log(number + ': ' + message);
+}
