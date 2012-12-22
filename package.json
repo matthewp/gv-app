@@ -5,9 +5,10 @@
   "keywords": ["sms", "google voice"],
   "author": "Matthew Phillips <matthew@matthewphillips.info>",
   "dependencies": {
-    "commander": ">= 1.1.1",
-    "ini": ">= 1.0.5",
-    "node-xml": ">= 1.0.2"
+    "commander": "1.1.1",
+    "ini": "1.0.5",
+    "node-xml": "1.0.2",
+    "voice.js": "0.1.1-alpha"
   },
   "main": "index"
 }

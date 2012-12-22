@@ -1,29 +1,55 @@
 #!/usr/bin/env node
 
 var program = require('commander'),
+    voicejs = require('voice.js'),
     init = require('./lib/init'),
     login = require('./lib/login'),
-    ppl = require('./lib/ppl');
+    ppl = require('./lib/ppl'),
+    sms = require('./lib/sms');
 
 program.version('0.1.0')
   .option('-p, --person', 'The person to send the message to.')
   .option('-n, --number', 'The number to send the message to.')
   .parse(process.argv);
 
-var initAndLogin = function(callback, errback) {
-  init(program, function(config) {
-    login(config, callback, errback);
-  });
-};
-
-initAndLogin(function(auth) {
+init(program, function(config) {
   ppl.pipe(function(number) {
     var message = program.args.join(' ');
-  
-    send(auth, number, message);
+    loginAndSend(config, number, message);
   });
+
+  if(program.number) {
+    var number = program.args[0];
+    var message = program.args.slice(1).join(' ');
+    loginAndSend(config, number, message);
+  }
 });
 
-function send(auth, number, message) {
-  console.log(number + ': ' + message);
+function loginAndSend(config, number, message) {
+  var client = login(config);
+
+  send(client, number, message);
+}
+
+function wrapped(callback, errback) {
+  return function(err, resp, data) {
+    if(err) {
+      (errback || function(){})(err);
+    } else {
+      callback(resp, data);
+    }
+  };
+}
+
+function send(client, number, message) {
+  client.sms({
+    to: number,
+    text: message
+  }, wrapped(function onSuccess() {
+      console.log(number + ': ' + message);
+      process.exit();
+    }, function onError(err) {
+      console.error(err);
+    })
+  );
 }
