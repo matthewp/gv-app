@@ -5,6 +5,7 @@ var program = require('commander'),
     login = require('./lib/login');
 
 program.version('0.0.1')
+  .option('-j, --json', 'Output in JSON format')
   .parse(process.argv);
 
 init(program, function(config) {
@@ -17,9 +18,35 @@ init(program, function(config) {
   }
 
   var client = login(config);
-  client.contacts(wrap(print));
+  client.contacts('get', wrap(print));
 });
 
 function print(resp, data) {
-  console.log('Got your contacts!');
+  if(!data || !data.contacts) {
+    return;
+  }
+
+
+  if(program.json) {
+    console.log(JSON.stringify(data.contacts));
+    return;
+  }
+
+  var contacts = Object.keys(data.contacts).map(function(key) {
+      return data.contacts[key];
+    })
+    .sort(function(a, b) {
+      var c = a.name[0] || 'z',
+          d = b.name[0] || 'z';
+
+      return c > d;
+    });
+
+  contacts.forEach(function(c) {
+    var name = c.name,
+        phone = c.phoneNumber.replace('+', '');
+
+    console.log(name + '\t' + phone);
+
+  });
 }
