@@ -4,6 +4,6 @@ var program = require('commander');
 
 program.version('0.1.0')
   .command('ls', 'List messages')
-  .command('ppl', 'List your contacts')
+  .command('contacts', 'List your contacts')
   .command('send [message]', 'Send an sms to a contact')
   .parse(process.argv);

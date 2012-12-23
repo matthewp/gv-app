@@ -7,8 +7,8 @@ var program = require('commander'),
     pipe = require('./lib/pipe');
 
 program.version('0.1.0')
-  .option('-p, --person', 'The person to send the message to.')
-  .option('-n, --number', 'The number to send the message to.')
+  .option('-p, --person [name]', 'The person to send the message to.')
+  .option('-n, --number [digits]', 'The number to send the message to.')
   .parse(process.argv);
 
 init(program, function(config) {
@@ -19,9 +19,12 @@ init(program, function(config) {
   });
 
   if(program.number) {
-    var number = program.args[0];
-    var message = program.args.slice(1).join(' ');
-    loginAndSend(config, number, message);
+    var message = program.args.join(' ');
+    loginAndSend(config, program.number, message);
+  } else if(program.person) {
+    console.log('Person name: ' + program.person);
+  } else {
+    program.help();
   }
 });
 

@@ -7,7 +7,7 @@
   "bin": {
     "gv": "./gv",
     "gv-ls": "./gv-ls",
-    "gv-ppl": "./gv-ppl",
+    "gv-contacts": "./gv-contacts",
     "gv-send": "./gv-send"
   },
   "dependencies": {
