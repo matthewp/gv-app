@@ -4,7 +4,8 @@ var program = require('commander'),
     voicejs = require('voice.js'),
     init = require('./lib/init'),
     login = require('./lib/login'),
-    pipe = require('./lib/pipe');
+    pipe = require('./lib/pipe'),
+    exec = require('child_process').exec;
 
 program.version('0.1.0')
   .option('-p, --person [name]', 'The person to send the message to.')
@@ -22,9 +23,16 @@ init(program, function(config) {
     var message = program.args.join(' ');
     loginAndSend(config, program.number, message);
   } else if(program.person) {
-    console.log('Person name: ' + program.person);
-  } else {
-    program.help();
+    var message = program.args.join(' ');
+
+    exec('ppl phone ' + program.person,
+      wrapped(function(stdout) {
+        if(stdout.length) {
+          loginAndSend(config, stdout.trim(), message);
+        } else {
+          process.exit();
+        }
+      }));
   }
 });
 
@@ -34,12 +42,14 @@ function loginAndSend(config, number, message) {
   send(client, number, message);
 }
 
-function wrapped(callback, errback) {
-  return function(err, resp, data) {
+function wrapped(callback) {
+  return function(err) {
     if(err) {
-      (errback || function(){})(err);
+      console.error(err);
+      process.exit();
     } else {
-      callback(resp, data);
+      var args = Array.prototype.slice.call(arguments, 1);
+      callback.apply(null, args);
     }
   };
 }
