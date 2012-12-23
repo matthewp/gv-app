@@ -4,11 +4,16 @@
   "description": "Google Voice command line tool.",
   "keywords": ["sms", "google voice"],
   "author": "Matthew Phillips <matthew@matthewphillips.info>",
+  "bin": {
+    "gv": "./gv",
+    "gv-ls": "./gv-ls",
+    "gv-ppl": "./gv-ppl",
+    "gv-send": "./gv-send"
+  },
   "dependencies": {
     "commander": "1.1.1",
     "ini": "1.0.5",
     "node-xml": "1.0.2",
     "voice.js": "0.1.1-alpha"
-  },
-  "main": "index"
+  }
 }

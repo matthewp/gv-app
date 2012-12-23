@@ -1,0 +1,25 @@
+#!/usr/bin/env node
+
+var program = require('commander'),
+    init = require('./lib/init'),
+    login = require('./lib/login');
+
+program.version('0.0.1')
+  .parse(process.argv);
+
+init(program, function(config) {
+  function wrap(callback) {
+    return function(err, resp, data) {
+      return err
+        ? console.error(err)
+        : callback(resp, data);
+    };
+  }
+
+  var client = login(config);
+  client.contacts(wrap(print));
+});
+
+function print(resp, data) {
+  console.log('Got your contacts!');
+}
