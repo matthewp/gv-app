@@ -4,7 +4,7 @@ var program = require('commander'),
     voicejs = require('voice.js'),
     init = require('./lib/init'),
     login = require('./lib/login'),
-    ppl = require('./lib/ppl');
+    pipe = require('./lib/pipe');
 
 program.version('0.1.0')
   .option('-p, --person', 'The person to send the message to.')
@@ -12,9 +12,10 @@ program.version('0.1.0')
   .parse(process.argv);
 
 init(program, function(config) {
-  ppl.pipe(function(number) {
+  pipe(function(phoneNumbers) {
     var message = program.args.join(' ');
-    loginAndSend(config, number, message);
+
+    loginAndSend(config, phoneNumbers[0], message);
   });
 
   if(program.number) {
