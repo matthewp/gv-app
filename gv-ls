@@ -41,37 +41,44 @@ init(program, function(config) {
 });
 
 function print(resp, data) {
-  if(data) {
-    var messages = data['conversations_response']['conversation']
-      .map(function(item) { return item['phone_call']; })
-      .reduce(function(a, b) { return a.concat(b); })
-      .sort(function(a, b) {
-        var c = new Date(a['start_time']),
-            d = new Date(b['start_time']);
-
-        return c > d;
-      });
-
-    if(messages.length) {
-      if(program.json) {
-        console.log(JSON.stringify(messages));
-      } else {
-        messages.forEach(function(item) {
-          var date = new Date(item['start_time']),
-              from = item['contact']['name'],
-              number = item['contact']['phone_number_formatted'],
-              msg = item['message_text'];
-
-          console.log(
-            date + '\t' +
-            from + ' ' + 
-            number + '\t' +
-            msg
-          );
-        });
-      }
-    }
+  if(!data) {
+    return;
   }
 
+  var messages = data['conversations_response']['conversation'];
+  if(!messages) {
+    return;
+  }
 
+  messages = messages
+    .map(function(item) { return item['phone_call']; })
+    .reduce(function(a, b) { return a.concat(b); })
+    .sort(function(a, b) {
+      var c = new Date(a['start_time']),
+          d = new Date(b['start_time']);
+
+      return c > d;
+    });
+
+  if(!messages.length) {
+    return;
+  }
+
+  if(program.json) {
+    console.log(JSON.stringify(messages));
+  } else {
+    messages.forEach(function(item) {
+      var date = new Date(item['start_time']),
+          from = item['contact']['name'],
+          number = item['contact']['phone_number_formatted'],
+          msg = item['message_text'];
+
+      console.log(
+        date + '\t' +
+        from + ' ' + 
+        number + '\t' +
+        msg
+      );
+    });
+  }
 }
