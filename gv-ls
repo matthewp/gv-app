@@ -5,13 +5,14 @@ var program = require('commander'),
     login = require('./lib/login');
 
 program.version('0.1.0')
-  .option('-p, --page', 'Retrieve page [1]', parseInt)
+  .option('-p, --page [#]', 'Retrieve page [1]', parseInt)
   .option('-j, --json', 'JSON output')
   .option('-s, --sms', 'SMS folder', 'sms')
-  .option('-t, --starred', 'Starred folder', 'starred')
+  .option('-a, --starred', 'Starred folder', 'starred')
   .option('-m, --missed', 'Missed calls', 'missed')
   .option('-l, --placed', 'Placed calls', 'placed')
   .option('-r, --received', 'Received calls', 'received')
+  .option('-t, --thread [id]', 'Thread [id]')
   .parse(process.argv);
 
 init(program, function(config) {
@@ -35,8 +36,14 @@ init(program, function(config) {
   var page = program.page || 1;
 
   var client = login(config);
-  client.get(folder, { start: page, limit: 10 },
-    wrapped(print, console.error.bind(console)));
+
+  if(program.thread) {
+    client.get('byId', { id: program.thread },
+      wrapped(print, console.error.bind(console)));
+  } else {
+    client.get(folder, { start: page, limit: 10 },
+      wrapped(print, console.error.bind(console)));
+  }
 
 });
 
@@ -68,16 +75,18 @@ function print(resp, data) {
     console.log(JSON.stringify(messages));
   } else {
     messages.forEach(function(item) {
-      var date = new Date(item['start_time']),
+      var id = item['id'],
+          date = new Date(item['start_time']),
           from = item['contact']['name'],
           number = item['contact']['phone_number_formatted'],
-          msg = item['message_text'];
+          msg = item['message_text'] || '';
 
       console.log(
         date + '\t' +
         from + ' ' + 
         number + '\t' +
-        msg
+        msg + '\t' +
+        id
       );
     });
   }
