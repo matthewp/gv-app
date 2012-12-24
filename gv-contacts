@@ -26,26 +26,53 @@ function wrapped(callback) {
 }
 
 function syncAll(resp, data) {
-  var contact = data.contacts[Object.keys(data.contacts)[0]];
-  sync(contact);
+  if(!data || !data.contacts || !Object.keys(data.contacts).length) {
+    process.exit();
+  }
+
+  var key = Object.keys(data.contacts)[0]
+  var contact = data.contacts[key];
+
+  sync(contact, function() {
+    console.log('Synced: ' + contact.name);
+    delete data.contacts[key];
+
+    syncAll(resp, data);
+  });
 }
 
-function sync(contact) {
+function sync(contact, callback) {
   var key = contact.name.replace(' ', '').toLowerCase();
   
   ppl('name', key, function(stdout) {
     var commands = {
-      'name': [ contact.name ],
-      'phone': [ contact.phoneNumber ]
+      'name': [ quoted(contact.name) ],
+      'phone': [ contact.phoneNumber.replace('+', '') ]
     };
 
     if(contact.emails && contact.emails.length) {
-      commands.email = [ contact.emails[0] ];
+      commands.email = [ quoted(contact.emails[0]) ];
     }
 
-    console.log(JSON.stringify(commands));
+    (function roll() {
+      if(Object.keys(commands).length == 0) {
+        callback(); return;
+      }
+
+      var cmd = Object.keys(commands)[0];
+      var arr = commands[cmd];
+      arr.unshift(key);
+      arr.unshift(cmd);
+      arr.push(function() {
+        delete commands[cmd];
+
+        roll();
+      }, process.exit.bind(process));
+
+      ppl.apply(null, arr);
+    })();
   }, function() {
-    ppl('add', key, contact.name, sync.bind(null, contact), process.exit.bind(process));
+    ppl('add', key, quoted(contact.name), sync.bind(null, contact, callback), process.exit.bind(process));
   });
 }
 
