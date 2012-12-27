@@ -85,8 +85,7 @@ function print(resp, data) {
         date + '\t' +
         from + ' ' + 
         number + '\t' +
-        msg + '\t' +
-        id
+        msg
       );
     });
   }
