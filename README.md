@@ -5,6 +5,10 @@
 
 gv uses git-style subcommands and includes ``gv-send``, ``gv-ls``, and ``gv-contacts``.
 
+##Installation
+
+    npm install -g gv
+
 ##Usage
 
     Usage: gv [options] [command]
