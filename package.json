@@ -1,9 +1,10 @@
 {
   "name": "gv",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Google Voice command line tool.",
   "keywords": ["sms", "google voice"],
   "author": "Matthew Phillips <matthew@matthewphillips.info>",
+  "homepage": "https://github.com/matthewp/gv-app",
   "bin": {
     "gv": "./gv",
     "gv-ls": "./gv-ls",
