@@ -2,7 +2,7 @@
 
 var program = require('commander');
 
-program.version('0.1.0')
+program.version('0.1.3')
   .command('ls', 'List messages')
   .command('contacts', 'List your contacts')
   .command('send [message]', 'Send an sms to a contact')

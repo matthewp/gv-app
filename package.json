@@ -1,6 +1,6 @@
 {
   "name": "gv",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Google Voice command line tool.",
   "keywords": ["sms", "google voice"],
   "author": "Matthew Phillips <matthew@matthewphillips.info>",
@@ -14,6 +14,6 @@
   "dependencies": {
     "commander": "1.1.1",
     "ini": "1.0.5",
-    "voice.js": "0.1.1-alpha"
+    "voice.js": "0.1.4b"
   }
 }
